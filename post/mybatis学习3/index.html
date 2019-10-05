@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <title>Mybatis学习3 // Gex&#39;s Blog</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.58.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="gex" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://gelearner.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mybatis学习3"/>
+<meta name="twitter:description" content="[TOC]
+教师和学生的关系图：
+1.多表查询 1.1、多对一查询 案例：查询学生表联合老师信息
+ 编写pojo类 teacher类：
+@Data public class Teacher implements Serializable { private int id; private String name; }   Student类：
+@Data public class Student implements Serializable { private int id; private String name; private int tid; private Teacher teachers; }   编写mapper文件
+&lt;mapper namespace=&quot;com.g.dao.StudentMapper&quot;&gt; &lt;select id=&quot;findall&quot; resultMap=&quot;studentmap&quot;&gt; select s.id 学号,s.name 姓名,t.name tname from student s left join teacher t on s.tid = t.id &lt;/select&gt; &lt;resultMap id=&quot;studentmap&quot; type=&quot;student&quot;&gt; &lt;result property=&quot;id&quot; column=&quot;学号&quot;/&gt; &lt;result property=&quot;name&quot; column=&quot;姓名&quot;/&gt; &lt;association property=&quot;teachers&quot; javaType=&quot;teacher&quot;&gt; &lt;result property=&quot;name&quot; column=&quot;tname&quot;/&gt; &lt;/association&gt; &lt;/resultMap&gt; &lt;/mapper&gt;  在核心配置文件中注册mapper文件"/>
+
+    <meta property="og:title" content="Mybatis学习3" />
+<meta property="og:description" content="[TOC]
+教师和学生的关系图：
+1.多表查询 1.1、多对一查询 案例：查询学生表联合老师信息
+ 编写pojo类 teacher类：
+@Data public class Teacher implements Serializable { private int id; private String name; }   Student类：
+@Data public class Student implements Serializable { private int id; private String name; private int tid; private Teacher teachers; }   编写mapper文件
+&lt;mapper namespace=&quot;com.g.dao.StudentMapper&quot;&gt; &lt;select id=&quot;findall&quot; resultMap=&quot;studentmap&quot;&gt; select s.id 学号,s.name 姓名,t.name tname from student s left join teacher t on s.tid = t.id &lt;/select&gt; &lt;resultMap id=&quot;studentmap&quot; type=&quot;student&quot;&gt; &lt;result property=&quot;id&quot; column=&quot;学号&quot;/&gt; &lt;result property=&quot;name&quot; column=&quot;姓名&quot;/&gt; &lt;association property=&quot;teachers&quot; javaType=&quot;teacher&quot;&gt; &lt;result property=&quot;name&quot; column=&quot;tname&quot;/&gt; &lt;/association&gt; &lt;/resultMap&gt; &lt;/mapper&gt;  在核心配置文件中注册mapper文件" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gelearner.github.io/post/mybatis%E5%AD%A6%E4%B9%A03/" />
+<meta property="article:published_time" content="2019-10-05T22:14:54+08:00" />
+<meta property="article:modified_time" content="2019-10-05T22:14:54+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://gelearner.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="gex" /></a>
+      <h1>Gex&#39;s Blog</h1>
+      <p>Studying!</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://gelearner.github.io/"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Mybatis学习3</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 5, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<p>[TOC]</p>
+
+<p><strong>教师和学生的关系图：</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20191002144159921.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h1 id="1-多表查询">1.多表查询</h1>
+
+<h3 id="1-1-多对一查询">1.1、多对一查询</h3>
+
+<p>案例：查询学生表联合老师信息</p>
+
+<ol>
+<li><p>编写pojo类
+teacher类：</p>
+
+<pre><code class="language-java">@Data
+public class Teacher implements Serializable {
+   private int id;
+   private String name;
+}
+</code></pre></li>
+</ol>
+
+<p>Student类：</p>
+
+<pre><code class="language-java">   @Data
+   public class Student implements Serializable {
+       private int id;
+       private String name;
+       private int tid;
+       private Teacher teachers;
+   }
+</code></pre>
+
+<ol>
+<li><p>编写mapper文件</p>
+
+<pre><code class="language-xml">&lt;mapper namespace=&quot;com.g.dao.StudentMapper&quot;&gt;
+   &lt;select id=&quot;findall&quot; resultMap=&quot;studentmap&quot;&gt;
+     select s.id 学号,s.name 姓名,t.name tname from student s left join teacher t on s.tid = t.id
+   &lt;/select&gt;
+   &lt;resultMap id=&quot;studentmap&quot; type=&quot;student&quot;&gt;
+       &lt;result property=&quot;id&quot; column=&quot;学号&quot;/&gt;
+       &lt;result property=&quot;name&quot; column=&quot;姓名&quot;/&gt;
+       &lt;association property=&quot;teachers&quot; javaType=&quot;teacher&quot;&gt;
+           &lt;result property=&quot;name&quot; column=&quot;tname&quot;/&gt;
+       &lt;/association&gt;
+   &lt;/resultMap&gt;
+&lt;/mapper&gt;
+</code></pre></li>
+
+<li><p>在核心配置文件中注册mapper文件</p>
+
+<pre><code class="language-xml">&lt;mappers&gt;
+   &lt;mapper resource=&quot;com/g/dao/StudentMapper.xml&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre></li>
+
+<li><p>测试：</p>
+
+<pre><code class="language-java">@org.junit.Test
+   public void UserMappertest(){
+       StudentMapper mapper = sqlSession.getMapper(StudentMapper.class);
+       List&lt;Student&gt; list = mapper.findall();
+       for (Student student : list) {
+           System.out.println(student);
+       }
+   }
+</code></pre></li>
+</ol>
+
+<h3 id="1-2-一对多查询">1.2、一对多查询</h3>
+
+<ol>
+<li><p>创建pojo类：
+Student：</p>
+
+<pre><code class="language-java">@Data
+public class Student implements Serializable {
+   private int id;
+   private String name;
+   private int tid;
+}
+</code></pre></li>
+</ol>
+
+<p>Teacher：</p>
+
+<pre><code class="language-java">   @Data
+   public class Teacher implements Serializable {
+       private int id;
+       private String name;
+       private List&lt;Student&gt; students;
+   }
+</code></pre>
+
+<ol>
+<li><p>编写Mapper映射文件：</p>
+
+<pre><code class="language-xml">&lt;mapper namespace=&quot;com.g.dao.TeacherMapper&quot;&gt;
+   &lt;select id=&quot;findbycol&quot; resultMap=&quot;Teachermap&quot; parameterType=&quot;map&quot;&gt;
+     select t.name,s.id sid,s.name sname from student s,teacher t where t.id=s.tid and t.name=#{tname}
+   &lt;/select&gt;
+   &lt;resultMap id=&quot;Teachermap&quot; type=&quot;teacher&quot;&gt;
+       &lt;result property=&quot;name&quot; column=&quot;name&quot;/&gt;
+       &lt;collection property=&quot;students&quot; ofType=&quot;student&quot;&gt;
+           &lt;result property=&quot;id&quot; column=&quot;sid&quot;/&gt;
+           &lt;result property=&quot;name&quot; column=&quot;sname&quot;/&gt;
+       &lt;/collection&gt;
+   &lt;/resultMap&gt;
+&lt;/mapper&gt;
+</code></pre></li>
+
+<li><p>注册Mapper文件：</p>
+
+<pre><code class="language-xml">&lt;mappers&gt;
+   &lt;mapper resource=&quot;com/g/dao/TeacherMapper.xml&quot;/&gt;
+&lt;/mappers&gt;
+</code></pre></li>
+
+<li><p>测试：</p>
+
+<pre><code class="language-java">@org.junit.Test
+   public void UserMappertest(){
+       TeacherMapper mapper = sqlSession.getMapper(TeacherMapper.class);
+       HashMap&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();
+       map.put(&quot;tname&quot;,&quot;秦老师&quot;);
+       List&lt;Teacher&gt; list = mapper.findbycol(map);
+       for (Teacher teacher : list) {
+           System.out.println(teacher);
+       }
+   }
+</code></pre></li>
+</ol>
+
+<h1 id="2-动态sql">2.动态Sql</h1>
+
+<p>为了代替在mapper配置文件中编写死的sql语句，出现了动态的sql，可以类比为xml中的标签</p>
+
+<h3 id="2-1-if">2.1、IF</h3>
+
+<p>步骤：</p>
+
+<ol>
+<li><p>在dao层编写接口</p>
+
+<pre><code class="language-java">List&lt;User&gt; findbyif(Map map);
+</code></pre></li>
+
+<li><p>在映射文件中编写sql语句（在这里使用了万能的Map的集合）</p>
+
+<pre><code class="language-xml">&lt;select id=&quot;findbyif&quot; resultType=&quot;User&quot; parameterType=&quot;map&quot;&gt;
+   select * from user where true
+   &lt;if test=&quot;id!=null&quot;&gt;
+       and id=#{id}
+   &lt;/if&gt;
+   &lt;if test=&quot;username!=null&quot;&gt;
+       and username=#{username}
+   &lt;/if&gt;
+&lt;/select&gt;
+</code></pre></li>
+
+<li><p>测试</p>
+
+<pre><code class="language-java">@Test
+public void findbyiftest(){
+   UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+   HashMap map = new HashMap();
+   map.put(&quot;id&quot;,1);
+   List&lt;User&gt; list = mapper.findbyif(map);
+   for (User user : list) {
+       System.out.println(user);
+   }
+}
+</code></pre></li>
+</ol>
+
+<h3 id="2-2-choose-when-otherwise">2.2、Choose(when,otherwise)</h3>
+
+<pre><code class="language-xml">&lt;select id=&quot;findbychoose&quot; resultType=&quot;user&quot; parameterType=&quot;map&quot;&gt;
+    select * from user
+    &lt;where&gt;
+        &lt;choose&gt;
+            &lt;when test=&quot;id!=null&quot;&gt;
+                and id=#{id}
+            &lt;/when&gt;
+            &lt;when test=&quot;username!=null&quot;&gt;
+                and username=#{username}
+            &lt;/when&gt;
+            &lt;otherwise&gt;
+                and password=#{password}
+            &lt;/otherwise&gt;
+        &lt;/choose&gt;
+    &lt;/where&gt;
+&lt;/select&gt;
+</code></pre>
+
+<p>测试：</p>
+
+<pre><code class="language-java">@Test
+public void findbychoosetest(){
+    UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+    HashMap map = new HashMap();
+    map.put(&quot;id&quot;,1);
+    map.put(&quot;password&quot;,&quot;123&quot;);
+    List&lt;User&gt; list = mapper.findbychoose(map);
+    for (User user : list) {
+        System.out.println(user);
+    }
+}
+</code></pre>
+
+<p>==注意==</p>
+
+<p>在往map中加值的时候，会走choose中的when的第一个的值，因为，第一个值存在，所以就不会进行到下一个值，并且where标签对sql语句进行了优化，可以在sql语句真的省略and</p>
+
+<h3 id="2-3-trim-where-set">2.3、TRIM（where,set）</h3>
+
+<ul>
+<li><p>where</p>
+
+<pre><code class="language-xml">&lt;select id=&quot;findbywhere&quot; resultType=&quot;user&quot; parameterType=&quot;map&quot;&gt;
+  select * from user
+  &lt;where&gt;
+      and id=#{id}
+  &lt;/where&gt;
+&lt;/select&gt;
+</code></pre></li>
+</ul>
+
+<p>==注意==where标签在这里优化了sql语句，对条件进行了甄别，判断是否存在and</p>
+
+<ul>
+<li><p>set</p>
+
+<pre><code class="language-xml">&lt;update id=&quot;updatebyset&quot; parameterType=&quot;map&quot;&gt;
+  update user
+  &lt;set&gt;
+      &lt;if test=&quot;username!=null&quot;&gt;
+          username=#{username},
+      &lt;/if&gt;
+      &lt;if test=&quot;password!=null&quot;&gt;
+          password=#{password}
+      &lt;/if&gt;
+  &lt;/set&gt;
+  where id=#{id}
+&lt;/update&gt;
+</code></pre></li>
+</ul>
+
+<p>==注意==注意这里也对sql进行了优化，优化掉了逗号</p>
+
+<h3 id="2-4-sql片段的抽取和使用">2.4、sql片段的抽取和使用</h3>
+
+<ol>
+<li><p>抽取，给一个sql标上id</p>
+
+<pre><code class="language-xml">&lt;sql id=&quot;findallsql&quot;&gt;
+   select * from user;
+&lt;/sql&gt;
+</code></pre></li>
+
+<li><p>使用,使用include这个标签</p>
+
+<pre><code class="language-xml">&lt;select id=&quot;findall&quot; resultType=&quot;user&quot;&gt;
+   &lt;include refid=&quot;findallsql&quot;/&gt;
+&lt;/select&gt;
+</code></pre></li>
+</ol>
+
+<h3 id="2-5-foreach">2.5、Foreach</h3>
+
+<pre><code class="language-xml">&lt;select id=&quot;findbyfor&quot; parameterType=&quot;map&quot; resultType=&quot;user&quot;&gt;
+    &lt;include refid=&quot;findallsql&quot;/&gt;
+    &lt;where&gt;
+        &lt;foreach collection=&quot;ids&quot; open=&quot;and id in(&quot; close=&quot;)&quot; separator=&quot;,&quot; item=&quot;id&quot;&gt;
+            #{id}
+        &lt;/foreach&gt;
+    &lt;/where&gt;
+&lt;/select&gt;
+</code></pre>
+
+<p><em>collection是指传过来的集合，open是指在sql语句中的定义的前括号的位置，close是后括号，separator是指分割符，这里是逗号也可以是or等，item是指在集合中的当前的对象。</em></p>
+
+<pre><code class="language-java">@Test
+public void findbyfortest(){
+    UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+    HashMap map = new HashMap();
+    ArrayList arrayList = new ArrayList();
+    for (int num = 1; num &lt;= 3; num++) {
+        arrayList.add(num);
+    }
+    map.put(&quot;ids&quot;,arrayList);
+    List&lt;User&gt; list = mapper.findbyfor(map);
+    for (User user : list) {
+        System.out.println(user);
+    }
+}
+</code></pre>
+
+<h1 id="3-缓存-了解">3.缓存（了解）</h1>
+
+<p>这里有个提前的知识：</p>
+
+<p><strong>多台数据库之间，读写分离，主从复制</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20191002144230633.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h3 id="3-1-简介">3.1、简介</h3>
+
+<pre><code>查询：连接数据库，耗资源！
+一次查询的结果，给他暂存在一个可以直接取到的地方！--&gt; 内存 ： 缓存
+我们再次查询相同数据的时候，直接走缓存，就不用走数据库了
+</code></pre>
+
+<ol>
+<li>什么是缓存 [ Cache ]？
+
+<ul>
+<li>存在内存中的临时数据。</li>
+<li>将用户经常查询的数据放在缓存（内存）中，用户去查询数据就不用从磁盘上(关系型数据库数据文件)查询，从缓存中查询，从而提高查询效率，解决了高并发系统的性能问题。</li>
+</ul></li>
+<li>为什么使用缓存？
+
+<ul>
+<li>减少和数据库的交互次数，减少系统开销，提高系统效率。</li>
+</ul></li>
+<li>什么样的数据能使用缓存？
+
+<ul>
+<li>经常查询并且不经常改变的数据。【可以使用缓存】</li>
+</ul></li>
+</ol>
+
+<h3 id="3-2-mybatis缓存">3.2、Mybatis缓存</h3>
+
+<ul>
+<li>MyBatis包含一个非常强大的查询缓存特性，它可以非常方便地定制和配置缓存。缓存可以极大的提升查询效率。</li>
+<li>MyBatis系统中默认定义了两级缓存：<strong>一级缓存</strong>和<strong>二级缓存</strong>
+
+<ul>
+<li>默认情况下，只有一级缓存开启。（SqlSession级别的缓存，也称为本地缓存）</li>
+<li>二级缓存需要手动开启和配置，他是基于namespace级别的缓存。</li>
+<li>为了提高扩展性，MyBatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存</li>
+</ul></li>
+</ul>
+
+<h3 id="3-3-一级缓存">3.3、一级缓存</h3>
+
+<ul>
+<li>一级缓存也叫本地缓存：  SqlSession
+
+<ul>
+<li>与数据库同一次会话期间查询到的数据会放在本地缓存中。</li>
+<li>以后如果需要获取相同的数据，直接从缓存中拿，没必须再去查询数据库；</li>
+</ul></li>
+</ul>
+
+<p>测试步骤：</p>
+
+<ol>
+<li>开启日志！</li>
+<li>测试在一个Sesion中查询两次相同记录</li>
+<li>查看日志输出</li>
+</ol>
+
+<p><img src="https://img-blog.csdnimg.cn/20191002144305983.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>缓存失效的情况：</p>
+
+<ol>
+<li><p>查询不同的东西</p></li>
+
+<li><p>增删改操作，可能会改变原来的数据，所以必定会刷新缓存！</p></li>
+</ol>
+
+<p><img src="https://img-blog.csdnimg.cn/20191002144323166.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<ol>
+<li><p>查询不同的Mapper.xml</p></li>
+
+<li><p>手动清理缓存！</p></li>
+</ol>
+
+<p><img src="https://img-blog.csdnimg.cn/20191002144354492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>小结：一级缓存默认是开启的，只在一次SqlSession中有效，也就是拿到连接到关闭连接这个区间段！</p>
+
+<p>一级缓存就是一个Map，currentHashMap</p>
+
+<h3 id="3-4-二级缓存">3.4、二级缓存</h3>
+
+<ul>
+<li>二级缓存也叫全局缓存，一级缓存作用域太低了，所以诞生了二级缓存</li>
+<li>基于namespace级别的缓存，一个名称空间，对应一个二级缓存；</li>
+<li>工作机制
+
+<ul>
+<li>一个会话查询一条数据，这个数据就会被放在当前会话的一级缓存中；</li>
+<li>如果当前会话关闭了，这个会话对应的一级缓存就没了；但是我们想要的是，会话关闭了，一级缓存中的数据被保存到二级缓存中；</li>
+<li>新的会话查询信息，就可以从二级缓存中获取内容；</li>
+<li>不同的mapper查出的数据会放在自己对应的缓存（map）中；</li>
+</ul></li>
+</ul>
+
+<p>步骤：</p>
+
+<ol>
+<li><p>开启全局缓存</p>
+
+<pre><code class="language-xml">&lt;!--显示的开启全局缓存--&gt;
+&lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot;/&gt;
+</code></pre></li>
+
+<li><p>在要使用二级缓存的Mapper中开启</p>
+
+<pre><code class="language-xml">&lt;!--在当前Mapper.xml中使用二级缓存--&gt;
+&lt;cache/&gt;
+</code></pre></li>
+</ol>
+
+<p>也可以自定义参数</p>
+
+<pre><code class="language-xml">   &lt;!--在当前Mapper.xml中使用二级缓存--&gt;
+   &lt;cache  eviction=&quot;FIFO&quot;
+          flushInterval=&quot;60000&quot;
+          size=&quot;512&quot;
+          readOnly=&quot;true&quot;/&gt;
+</code></pre>
+
+<ol>
+<li><p>测试</p>
+
+<ol>
+<li><p>问题:我们需要将实体类序列化！否则就会报错！</p>
+
+<pre><code>Caused by: java.io.NotSerializableException: com.kuang.pojo.User
+</code></pre></li>
+</ol></li>
+</ol>
+
+<p>小结：</p>
+
+<ul>
+<li>只要开启了二级缓存，在同一个Mapper下就有效</li>
+<li>所有的数据都会先放在一级缓存中；</li>
+<li>只有当会话提交，或者关闭的时候，才会提交到二级缓冲中！</li>
+</ul>
+
+<h3 id="3-5-缓存原理">3.5、缓存原理</h3>
+
+<p><img src="https://img-blog.csdnimg.cn/2019100214441298.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<h3 id="3-6-自定义缓存-ehcache">3.6、自定义缓存-ehcache</h3>
+
+<pre><code class="language-xml">Ehcache是一种广泛使用的开源Java分布式缓存。主要面向通用缓存
+</code></pre>
+
+<p>要在程序中使用ehcache，先要导包！</p>
+
+<pre><code class="language-xml">&lt;!-- https://mvnrepository.com/artifact/org.mybatis.caches/mybatis-ehcache --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mybatis.caches&lt;/groupId&gt;
+    &lt;artifactId&gt;mybatis-ehcache&lt;/artifactId&gt;
+    &lt;version&gt;1.1.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>在mapper中指定使用我们的ehcache缓存实现！</p>
+
+<pre><code class="language-xml">&lt;!--在当前Mapper.xml中使用二级缓存--&gt;
+&lt;cache type=&quot;org.mybatis.caches.ehcache.EhcacheCache&quot;/&gt;
+</code></pre>
+
+<p>ehcache.xml</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ehcache xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+         xsi:noNamespaceSchemaLocation=&quot;http://ehcache.org/ehcache.xsd&quot;
+         updateCheck=&quot;false&quot;&gt;
+    &lt;!--
+       diskStore：为缓存路径，ehcache分为内存和磁盘两级，此属性定义磁盘的缓存位置。参数解释如下：
+       user.home – 用户主目录
+       user.dir  – 用户当前工作目录
+       java.io.tmpdir – 默认临时文件路径
+     --&gt;
+    &lt;diskStore path=&quot;./tmpdir/Tmp_EhCache&quot;/&gt;
+    
+    &lt;defaultCache
+            eternal=&quot;false&quot;
+            maxElementsInMemory=&quot;10000&quot;
+            overflowToDisk=&quot;false&quot;
+            diskPersistent=&quot;false&quot;
+            timeToIdleSeconds=&quot;1800&quot;
+            timeToLiveSeconds=&quot;259200&quot;
+            memoryStoreEvictionPolicy=&quot;LRU&quot;/&gt;
+ 
+    &lt;cache
+            name=&quot;cloud_user&quot;
+            eternal=&quot;false&quot;
+            maxElementsInMemory=&quot;5000&quot;
+            overflowToDisk=&quot;false&quot;
+            diskPersistent=&quot;false&quot;
+            timeToIdleSeconds=&quot;1800&quot;
+            timeToLiveSeconds=&quot;1800&quot;
+            memoryStoreEvictionPolicy=&quot;LRU&quot;/&gt;
+    &lt;!--
+       defaultCache：默认缓存策略，当ehcache找不到定义的缓存时，则使用这个缓存策略。只能定义一个。
+     --&gt;
+    &lt;!--
+      name:缓存名称。
+      maxElementsInMemory:缓存最大数目
+      maxElementsOnDisk：硬盘最大缓存个数。
+      eternal:对象是否永久有效，一但设置了，timeout将不起作用。
+      overflowToDisk:是否保存到磁盘，当系统当机时
+      timeToIdleSeconds:设置对象在失效前的允许闲置时间（单位：秒）。仅当eternal=false对象不是永久有效时使用，可选属性，默认值是0，也就是可闲置时间无穷大。
+      timeToLiveSeconds:设置对象在失效前允许存活时间（单位：秒）。最大时间介于创建时间和失效时间之间。仅当eternal=false对象不是永久有效时使用，默认是0.，也就是对象存活时间无穷大。
+      diskPersistent：是否缓存虚拟机重启期数据 Whether the disk store persists between restarts of the Virtual Machine. The default value is false.
+      diskSpoolBufferSizeMB：这个参数设置DiskStore（磁盘缓存）的缓存区大小。默认是30MB。每个Cache都应该有自己的一个缓冲区。
+      diskExpiryThreadIntervalSeconds：磁盘失效线程运行时间间隔，默认是120秒。
+      memoryStoreEvictionPolicy：当达到maxElementsInMemory限制时，Ehcache将会根据指定的策略去清理内存。默认策略是LRU（最近最少使用）。你可以设置为FIFO（先进先出）或是LFU（较少使用）。
+      clearOnFlush：内存数量最大时是否清除。
+      memoryStoreEvictionPolicy:可选策略有：LRU（最近最少使用，默认策略）、FIFO（先进先出）、LFU（最少访问次数）。
+      FIFO，first in first out，这个是大家最熟的，先进先出。
+      LFU， Less Frequently Used，就是上面例子中使用的策略，直白一点就是讲一直以来最少被使用的。如上面所讲，缓存的元素有一个hit属性，hit值最小的将会被清出缓存。
+      LRU，Least Recently Used，最近最少使用的，缓存的元素有一个时间戳，当缓存容量满了，而又需要腾出地方来缓存新的元素的时候，那么现有缓存元素中时间戳离当前时间最远的元素将被清出缓存。
+   --&gt;
+
+&lt;/ehcache&gt;
+
+</code></pre>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

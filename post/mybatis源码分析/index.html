@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <title>Mybatis源码分析 // Gex&#39;s Blog</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.58.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="gex" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://gelearner.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mybatis源码分析"/>
+<meta name="twitter:description" content=" Mybatis源码解析 步骤：
+ 使用Resources类的方法加载配置文件
+in = Resources.getResourceAsStream(&quot;sqlconfig.xml&quot;);  实例化sqlsessionfactorybuild实例化对象
+SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);  分析上面的build方法，使用XMLConfigBuilder类进行解析
+XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);  使用debug进行调试，获到了配置文件中的所有的配置信息
+ sessionFactory的实例化
+SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);  在debug中发现一个事务管理
+ 会产生多个执行器
+ 多个执行器里面的一个默认的执行器会产生一个sqlsession的对象
+ 使用sqlsession对象对数据库进行curd的操作，在这里会根据curd的返回值，对上面的事务是提交还是回滚
+ 判断事务是否提交，如果事务成功，需要对事务进行提交，如果事务失败，则需要进行事务的回滚。
+ 手动提交事务
+ 释放资源，根据异常的执行的顺序，先打开的后关闭的原则
+  "/>
+
+    <meta property="og:title" content="Mybatis源码分析" />
+<meta property="og:description" content=" Mybatis源码解析 步骤：
+ 使用Resources类的方法加载配置文件
+in = Resources.getResourceAsStream(&quot;sqlconfig.xml&quot;);  实例化sqlsessionfactorybuild实例化对象
+SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);  分析上面的build方法，使用XMLConfigBuilder类进行解析
+XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);  使用debug进行调试，获到了配置文件中的所有的配置信息
+ sessionFactory的实例化
+SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);  在debug中发现一个事务管理
+ 会产生多个执行器
+ 多个执行器里面的一个默认的执行器会产生一个sqlsession的对象
+ 使用sqlsession对象对数据库进行curd的操作，在这里会根据curd的返回值，对上面的事务是提交还是回滚
+ 判断事务是否提交，如果事务成功，需要对事务进行提交，如果事务失败，则需要进行事务的回滚。
+ 手动提交事务
+ 释放资源，根据异常的执行的顺序，先打开的后关闭的原则
+  " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gelearner.github.io/post/mybatis%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" />
+<meta property="article:published_time" content="2019-10-05T22:16:38+08:00" />
+<meta property="article:modified_time" content="2019-10-05T22:16:38+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://gelearner.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="gex" /></a>
+      <h1>Gex&#39;s Blog</h1>
+      <p>Studying!</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://gelearner.github.io/"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Mybatis源码分析</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 5, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          1 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<h1 id="mybatis源码解析">Mybatis源码解析</h1>
+
+<p><img src="https://img-blog.csdnimg.cn/2019100209562359.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>步骤：</p>
+
+<ol>
+<li><p>使用Resources类的方法加载配置文件</p>
+
+<pre><code class="language-java">in = Resources.getResourceAsStream(&quot;sqlconfig.xml&quot;);
+</code></pre></li>
+
+<li><p>实例化sqlsessionfactorybuild实例化对象</p>
+
+<pre><code class="language-java">SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
+</code></pre></li>
+
+<li><p>分析上面的build方法，使用XMLConfigBuilder类进行解析</p>
+
+<pre><code class="language-java">XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+</code></pre></li>
+
+<li><p>使用debug进行调试，获到了配置文件中的所有的配置信息</p></li>
+
+<li><p>sessionFactory的实例化</p>
+
+<pre><code class="language-java">SqlSessionFactory sessionFactory = new SqlSessionFactoryBuilder().build(in);
+</code></pre></li>
+
+<li><p>在debug中发现一个事务管理</p></li>
+
+<li><p>会产生多个执行器</p></li>
+
+<li><p>多个执行器里面的一个默认的执行器会产生一个sqlsession的对象</p></li>
+
+<li><p>使用sqlsession对象对数据库进行curd的操作，在这里会根据curd的返回值，对上面的事务是提交还是回滚</p></li>
+
+<li><p>判断事务是否提交，如果事务成功，需要对事务进行提交，如果事务失败，则需要进行事务的回滚。</p></li>
+
+<li><p>手动提交事务</p></li>
+
+<li><p>释放资源，根据异常的执行的顺序，先打开的后关闭的原则</p></li>
+</ol>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
