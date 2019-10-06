@@ -6,10 +6,43 @@
     <description>Recent content on Gex&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 05 Oct 2019 22:16:38 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 06 Oct 2019 10:08:58 +0800</lastBuildDate>
     
 	<atom:link href="https://gelearner.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>博客搭建步骤</title>
+      <link>https://gelearner.github.io/post/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4/</link>
+      <pubDate>Sun, 06 Oct 2019 10:08:58 +0800</pubDate>
+      
+      <guid>https://gelearner.github.io/post/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4/</guid>
+      <description>第一步：下载hugo 在官网下载hugo安装包，注意最好使用最新版本的安装包 官网：https://github.com/gohugoio/hugo/releases
+根据自己的电脑下载安装装包，本人使用0.58.3最新版本，高兼容下
+第二步：配置环境 配置hugo的环境，先在一个盘里面建一个Hugo的文件夹，里面再建一个bin文件夹，并将hugo文件解压进去，如：d:/Hugo/bin
+进行路径的配置，配置与java等相同，配置完成的标志是：在桌面cmd中输入hugo version
+第三步：创建站点 在D:/Hugo文件夹下打开cmd，创建一个新的站点：hugo new site blog(站点名自己起),创建后会生成一个blog文件夹，里面嵌套了很多文件夹。
+第四步：下载皮肤 下载皮肤的官网：https://themes.gohugo.io/
+挑选一个心怡的皮肤，从github下载或者直接使用git检出到本地，放在thtmes文件夹中
+git检出：使用cmd指令台进入themes文件夹cd blog/themes，在这里打开git控制台输入：
+git clone +github给的git连接
+第五步：本地网站测试 在blog文件夹下打开cmd，输入：
+hugo server--theme=hugo-theme-m10c
+在本地浏览器输入http://localhost:1313/
+出现官方默认的页面说明可用，根据每个皮肤的要求可以更改配置文件
+创建新博客的命令：hugo new post/***.md,自己创建的md文件不能使用，使用命令建出来的博客有约束头代码。
+第六步：挂接到github上 先在github上创建一个仓库，仓库的名字是Username.github.io
+然后使用hugo生成静态的页面：使用cmd
+hugo --theme=hugo-natrium-theme --baseUrl=&amp;quot;https://Username.github.io/&amp;quot;
+命令结束后会在blog中创建一个public文件，这时只需要将文件上传到仓库中即可：
+Git命令：
+ git init
+ git add .
+ git commit -m &amp;lsquo;first commit&amp;rsquo;
+ git remote add origin https://github.com/Username/Username.github.io.git
+ git pull &amp;ndash;rebase origin master
+ git push -u origin master</description>
+    </item>
     
     <item>
       <title>Mybatis源码分析</title>
