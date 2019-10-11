@@ -30,21 +30,39 @@
     </item>
     
     <item>
-      <title>Spring学习2</title>
-      <link>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A02/</link>
+      <title>Spring学习（2）之Spring的bean装配</title>
+      <link>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A02%E4%B9%8Bspring%E7%9A%84bean%E8%A3%85%E9%85%8D/</link>
       <pubDate>Sun, 06 Oct 2019 11:38:34 +0800</pubDate>
       
-      <guid>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A02/</guid>
-      <description></description>
+      <guid>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A02%E4%B9%8Bspring%E7%9A%84bean%E8%A3%85%E9%85%8D/</guid>
+      <description>Spring的bean装配 在Spring中有三种装配的方式
+ 在 XML 文件中显式配置 在 Java 的接口和类中实现配置 隐式 Bean 的发现机制和自动装配原则  ==注意：自动装配原则在注解和xml中都会使用==
+0.方式选择的原则 在现实的工作中，这 3 种方式都会被用到，并且在学习和工作之中常常混合使用，所以这里给出一些关于这 3 种优先级的建议：
+1.最优先：通过隐式 Bean 的发现机制和自动装配的原则。 基于约定由于配置的原则，这种方式应该是最优先的
+ 好处：减少程序开发者的决定权，简单又不失灵活。  2.其次：Java 接口和类中配置实现配置 在没有办法使用自动装配原则的情况下应该优先考虑此类方法
+ 好处：避免 XML 配置的泛滥，也更为容易。 典型场景：一个父类有多个子类，比如学生类有两个子类，一个男学生类和女学生类，通过 IoC 容器初始化一个学生类，容器将无法知道使用哪个子类去初始化，这个时候可以使用 Java 的注解配置去指定。  3.最后：XML 方式配置 在上述方法都无法使用的情况下，那么也只能选择 XML 配置的方式。
+ 好处：简单易懂（当然，特别是对于初学者） 典型场景：当使用第三方类的时候，有些类并不是我们开发的，我们无法修改里面的代码，这个时候就通过 XML 的方式配置使用了。  4.xml 与 注解：
+ xml 更加万能，适用于任何场合！维护简单方便 注解 不是自己类使用不了，维护相对复杂！  xml 与 注解最佳实践：
+ xml 用来管理bean； 注解只负责完成属性的注入； 我们在使用的过程中，只需要注意一个问题：必须让注解生效，就需要开启注解的支持  参考：地址</description>
     </item>
     
     <item>
-      <title>Spring学习1</title>
-      <link>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A01/</link>
+      <title>Spring学习（1）之IoC和Di</title>
+      <link>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A01%E4%B9%8Bioc%E5%92%8Cdi/</link>
       <pubDate>Sun, 06 Oct 2019 11:38:19 +0800</pubDate>
       
-      <guid>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A01/</guid>
-      <description></description>
+      <guid>https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A01%E4%B9%8Bioc%E5%92%8Cdi/</guid>
+      <description>Spring学习（1）之IoC和Di 1.Spring 1.1简介  是一个大杂烩，使现有的技术更快的使用，整合了现有的所有的框架。 2002年，首次推出了SPring的框架的雏形：interface21框架。 创始人:Rod Johnson,Spring Framework创始人，著名作者。很难想象Rod Johnson的学历，真的让好多人大吃一惊，他是悉尼大学的博士，然而他的专业不是计算机，而是音乐学。提出了著名的造轮子的理论。  现在的技术栈普遍是：
+ SSH ： Struct2 + Spring + Hibernate！ SSM ： SpringMvc + Spring + Mybatis！  Spring的获取的来源
+官网：https://spring.io/projects/spring-framework#overview
+官方下载地址： http://repo.spring.io/release/org/springframework/spring
+GitHub：https://github.com/spring-projects/spring-framework
+Spring的jar包：
+&amp;lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-webmvc&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.2.0.RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; // 后期使用的时候，会对数据库进行相关的操作 &amp;lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-jdbc&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;5.2.0.RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  1.2优点与缺点： 优点：
+==Spring是一个轻量级的控制反转（ioc）和面向切面编程（aop）的框架。==
+ 开源性 轻量级的，非入侵式的。 控制反转和，面向切面编程的。 支持对事务的处理，对框架的支持。  缺点：
+配置十分的繁琐，被称为配置地狱。
+1.3组成：  Data Access/Integration层包含有JDBC、ORM、OXM、JMS和Transaction模块。 Web层包含了Web、Web-Servlet、WebSocket、Web-Porlet模块。 AOP模块提供了一个符合AOP联盟标准的面向切面编程的实现。 Core Container(核心容器)：包含有Beans、Core、Context和SpEL模块。 Test模块支持使用JUnit和TestNG对Spring组件进行测试。  1.</description>
     </item>
     
     <item>

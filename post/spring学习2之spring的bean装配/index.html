@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <title>Spring学习（2）之Spring的bean装配 // Gex&#39;s Blog</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.58.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="gex" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://gelearner.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring学习（2）之Spring的bean装配"/>
+<meta name="twitter:description" content="Spring的bean装配 在Spring中有三种装配的方式
+ 在 XML 文件中显式配置 在 Java 的接口和类中实现配置 隐式 Bean 的发现机制和自动装配原则  ==注意：自动装配原则在注解和xml中都会使用==
+0.方式选择的原则 在现实的工作中，这 3 种方式都会被用到，并且在学习和工作之中常常混合使用，所以这里给出一些关于这 3 种优先级的建议：
+1.最优先：通过隐式 Bean 的发现机制和自动装配的原则。 基于约定由于配置的原则，这种方式应该是最优先的
+ 好处：减少程序开发者的决定权，简单又不失灵活。  2.其次：Java 接口和类中配置实现配置 在没有办法使用自动装配原则的情况下应该优先考虑此类方法
+ 好处：避免 XML 配置的泛滥，也更为容易。 典型场景：一个父类有多个子类，比如学生类有两个子类，一个男学生类和女学生类，通过 IoC 容器初始化一个学生类，容器将无法知道使用哪个子类去初始化，这个时候可以使用 Java 的注解配置去指定。  3.最后：XML 方式配置 在上述方法都无法使用的情况下，那么也只能选择 XML 配置的方式。
+ 好处：简单易懂（当然，特别是对于初学者） 典型场景：当使用第三方类的时候，有些类并不是我们开发的，我们无法修改里面的代码，这个时候就通过 XML 的方式配置使用了。  4.xml 与 注解：
+ xml 更加万能，适用于任何场合！维护简单方便 注解 不是自己类使用不了，维护相对复杂！  xml 与 注解最佳实践：
+ xml 用来管理bean； 注解只负责完成属性的注入； 我们在使用的过程中，只需要注意一个问题：必须让注解生效，就需要开启注解的支持  参考：地址"/>
+
+    <meta property="og:title" content="Spring学习（2）之Spring的bean装配" />
+<meta property="og:description" content="Spring的bean装配 在Spring中有三种装配的方式
+ 在 XML 文件中显式配置 在 Java 的接口和类中实现配置 隐式 Bean 的发现机制和自动装配原则  ==注意：自动装配原则在注解和xml中都会使用==
+0.方式选择的原则 在现实的工作中，这 3 种方式都会被用到，并且在学习和工作之中常常混合使用，所以这里给出一些关于这 3 种优先级的建议：
+1.最优先：通过隐式 Bean 的发现机制和自动装配的原则。 基于约定由于配置的原则，这种方式应该是最优先的
+ 好处：减少程序开发者的决定权，简单又不失灵活。  2.其次：Java 接口和类中配置实现配置 在没有办法使用自动装配原则的情况下应该优先考虑此类方法
+ 好处：避免 XML 配置的泛滥，也更为容易。 典型场景：一个父类有多个子类，比如学生类有两个子类，一个男学生类和女学生类，通过 IoC 容器初始化一个学生类，容器将无法知道使用哪个子类去初始化，这个时候可以使用 Java 的注解配置去指定。  3.最后：XML 方式配置 在上述方法都无法使用的情况下，那么也只能选择 XML 配置的方式。
+ 好处：简单易懂（当然，特别是对于初学者） 典型场景：当使用第三方类的时候，有些类并不是我们开发的，我们无法修改里面的代码，这个时候就通过 XML 的方式配置使用了。  4.xml 与 注解：
+ xml 更加万能，适用于任何场合！维护简单方便 注解 不是自己类使用不了，维护相对复杂！  xml 与 注解最佳实践：
+ xml 用来管理bean； 注解只负责完成属性的注入； 我们在使用的过程中，只需要注意一个问题：必须让注解生效，就需要开启注解的支持  参考：地址" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A02%E4%B9%8Bspring%E7%9A%84bean%E8%A3%85%E9%85%8D/" />
+<meta property="article:published_time" content="2019-10-06T11:38:34+08:00" />
+<meta property="article:modified_time" content="2019-10-06T11:38:34+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://gelearner.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="gex" /></a>
+      <h1>Gex&#39;s Blog</h1>
+      <p>Studying!</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/Gelearner"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Spring学习（2）之Spring的bean装配</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 6, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<h1 id="spring的bean装配">Spring的bean装配</h1>
+
+<p>在Spring中有三种装配的方式</p>
+
+<ol>
+<li>在 XML 文件中显式配置</li>
+<li>在 Java 的接口和类中实现配置</li>
+<li><u><em>隐式 Bean 的发现机制和自动装配原则</em></u></li>
+</ol>
+
+<p>==注意：自动装配原则在注解和xml中都会使用==</p>
+
+<h3 id="0-方式选择的原则">0.方式选择的原则</h3>
+
+<p>在现实的工作中，这 3 种方式都会被用到，并且在学习和工作之中常常混合使用，所以这里给出一些关于这 3 种优先级的建议：</p>
+
+<p>1.<strong>最优先：通过隐式 Bean 的发现机制和自动装配的原则。</strong>
+ 基于约定由于配置的原则，这种方式应该是最优先的</p>
+
+<ul>
+<li><strong>好处：</strong>减少程序开发者的决定权，简单又不失灵活。</li>
+</ul>
+
+<p>2.<strong>其次：Java 接口和类中配置实现配置</strong>
+ 在没有办法使用自动装配原则的情况下应该优先考虑此类方法</p>
+
+<ul>
+<li><strong>好处：</strong>避免 XML 配置的泛滥，也更为容易。</li>
+<li><strong>典型场景：</strong>一个父类有多个子类，比如学生类有两个子类，一个男学生类和女学生类，通过 IoC 容器初始化一个学生类，容器将无法知道使用哪个子类去初始化，这个时候可以使用 Java 的注解配置去指定。</li>
+</ul>
+
+<p>3.<strong>最后：XML 方式配置</strong>
+ 在上述方法都无法使用的情况下，那么也只能选择 XML 配置的方式。</p>
+
+<ul>
+<li><strong>好处：</strong>简单易懂（当然，特别是对于初学者）</li>
+<li><strong>典型场景：</strong>当使用第三方类的时候，有些类并不是我们开发的，我们无法修改里面的代码，这个时候就通过 XML 的方式配置使用了。</li>
+</ul>
+
+<p>4.<strong>xml 与 注解：</strong></p>
+
+<ul>
+<li>xml 更加万能，适用于任何场合！维护简单方便</li>
+<li>注解 不是自己类使用不了，维护相对复杂！</li>
+</ul>
+
+<p><strong>xml 与 注解最佳实践：</strong></p>
+
+<ul>
+<li>xml 用来管理bean；</li>
+<li>注解只负责完成属性的注入；</li>
+<li>我们在使用的过程中，只需要注意一个问题：必须让注解生效，就需要开启注解的支持</li>
+</ul>
+
+<p>参考：<a href="https://www.cnblogs.com/wmyskxz/p/8830632.html">地址</a></p>
+
+<hr />
+
+<h3 id="1使用xml自动装配">1使用XML自动装配</h3>
+
+<p>例子理解：</p>
+
+<h5 id="1-1手动装配"><strong>1.1手动装配</strong></h5>
+
+<ol>
+<li><p>创建三个实体类</p>
+
+<pre><code class="language-java">Student
+public class Student implements Serializable {
+   private String name;
+   private Cat cat;
+   private Dog dog;
+}
+   
+Dog
+public class Dog {
+   public void eat(){
+       System.out.println(&quot;吃骨头&quot;);
+   }
+}
+   
+Cat
+public class Cat {
+   public void eat(){
+       System.out.println(&quot;猫吃鱼&quot;);
+   }
+}
+</code></pre></li>
+
+<li><p>配置文件：</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+      xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+   &lt;bean id=&quot;cat&quot; class=&quot;com.g.pojo.Cat&quot;/&gt;
+   &lt;bean id=&quot;dog&quot; class=&quot;com.g.pojo.Dog&quot;/&gt;
+   &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+       &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+       &lt;property name=&quot;cat&quot; ref=&quot;cat&quot;/&gt;
+       &lt;property name=&quot;dog&quot; ref=&quot;dog&quot;/&gt;
+   &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre></li>
+
+<li><p>测试：</p>
+
+<pre><code class="language-java">public class MyTest {
+   public static void main(String[] args) {
+       ApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+       Student student = context.getBean(&quot;student&quot;, Student.class);
+       student.getCat().eat();
+       student.getDog().eat();
+   }
+}
+</code></pre></li>
+</ol>
+
+<h5 id="1-2-bytype式自动装配-autowire-bytype">1.2<strong>ByType式自动装配=&gt; autowire=&ldquo;byType&rdquo;</strong></h5>
+
+<p>配置文件：</p>
+
+<pre><code class="language-xml">1.bean中不ref
+&lt;bean id=&quot;cat&quot; class=&quot;com.g.pojo.Cat&quot;/&gt;
+&lt;bean id=&quot;dog&quot; class=&quot;com.g.pojo.Dog&quot;/&gt;
+&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; autowire=&quot;byType&quot;&gt;
+    &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+&lt;/bean&gt;
+
+2.写错id
+&lt;bean id=&quot;catsss&quot; class=&quot;com.g.pojo.Cat&quot;/&gt;
+&lt;bean id=&quot;dogsss&quot; class=&quot;com.g.pojo.Dog&quot;/&gt;
+&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; autowire=&quot;byType&quot;&gt;
+    &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+&lt;/bean&gt;
+
+3.不写id
+&lt;bean class=&quot;com.g.pojo.Cat&quot;/&gt;
+&lt;bean class=&quot;com.g.pojo.Dog&quot;/&gt;
+&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; autowire=&quot;byType&quot;&gt;
+    &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p>==注意：当在bean的参数autowire设置为按类型查找时，可以不用写ref引用。==</p>
+
+<p>==但是前提是只存在一种引用的类型，保证只有唯一的Class类==</p>
+
+<h5 id="1-3-byname式自动装配-autowire-byname">1.3<strong>ByName式自动装配=&gt; autowire=&ldquo;byName&rdquo;</strong></h5>
+
+<p>配置文件：</p>
+
+<pre><code class="language-xml">&lt;bean id=&quot;cat&quot; class=&quot;com.g.pojo.Cat&quot;/&gt;
+&lt;bean id=&quot;dog&quot; class=&quot;com.g.pojo.Dog&quot;/&gt;
+&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; autowire=&quot;byName&quot;&gt;
+    &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<p>==注意：当student对象ref 其他类型的对象（bean id），这时也可以省略。==</p>
+
+<p>==但是id必须保证在student中设置的set后面的name==</p>
+
+<ul>
+<li><p>小结：</p>
+
+<ul>
+<li>byname的时候，需要保证所有bean的id唯一，并且这个bean需要和自动注入的属性的set方法的值一致！</li>
+<li>bytype的时候，需要保证所有bean的class唯一，并且这个bean需要和自动注入的属性的类型一致！
+
+<br /></li>
+</ul></li>
+</ul>
+
+<h3 id="2-使用半注解半xml装配">2.使用半注解半xml装配</h3>
+
+<p><em><u>jdk1.5支持的注解，Spring2.5支持注解</u></em></p>
+
+<p>使用的注解：</p>
+
+<p>==<strong>@Autowired</strong>==
+直接在<strong>属性上</strong>使用即可！也可以在<strong>set方式</strong>上使用，使用Autowired 我们可以不用编写Set方法了，前提是你这个自动装配的属性在 IOC（Spring）容器中存在，且符唯一的name。</p>
+
+<p>如果显示定义了Autowired的<strong>required</strong>属性为false，说明这个对象可以为null，否则不允许为空</p>
+
+<p>==<strong>@Nullable</strong>==</p>
+
+<p>字段标记了这个注解，说明这个字段可以为null；</p>
+
+<p>==<strong>@Qualifier</strong>==</p>
+
+<p>如果@Autowired自动装配的环境比较复杂，自动装配无法通过一个注解==@Autowired==完成的时候、我们可以使用@Qualifier<strong>(value=&ldquo;xxx&rdquo;)</strong>去配置@Autowired的使用，指定一个唯一的bean对象注入！</p>
+
+<p>==<strong>@Resource</strong>==</p>
+
+<p>放在<strong>属性</strong>上使用，@Resource(name = &ldquo;别名&rdquo;)，</p>
+
+<p><strong>步骤</strong></p>
+
+<h5 id="方式一">方式一：</h5>
+
+<p>1.使用注解结合xml需要更改xml配置文件</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+    &lt;context:annotation-config/&gt;
+    &lt;bean class=&quot;com.g.pojo.Cat&quot;/&gt;
+    &lt;bean class=&quot;com.g.pojo.Dog&quot;/&gt;
+    &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;/&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>==@Autowired装配的思想就是byType，要求class唯一，因此删掉id也可以使用==</p>
+
+<p>2.实体类student的操作:</p>
+
+<pre><code class="language-java">public class Student implements Serializable {
+    @Autowired
+    private Cat cat;
+    @Autowired
+    private Dog dog;
+    public Student() {
+    }
+}
+</code></pre>
+
+<p>==@Autowired也可以放在set的上面==</p>
+
+<p>3.测试：</p>
+
+<pre><code class="language-java">public class MyTest {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+        Student student = context.getBean(&quot;student&quot;, Student.class);
+        student.getDog().eat();
+        student.getCat().eat();
+    }
+}
+</code></pre>
+
+<h5 id="方式二">方式二：</h5>
+
+<ol>
+<li><p>修改xml文件</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+      xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+      xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+   &lt;context:annotation-config/&gt;
+   &lt;bean id=&quot;cat&quot; class=&quot;com.g.pojo.Cat&quot;/&gt;
+   &lt;bean id=&quot;dog&quot; class=&quot;com.g.pojo.Dog&quot;/&gt;
+   &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;/&gt;
+&lt;/beans&gt;
+   
+</code></pre></li>
+
+<li><p>修改实体类：</p>
+
+<pre><code class="language-java">public class Student implements Serializable {
+   @Resource
+   private Cat cat;
+   @Resource(name = &quot;dog&quot;)
+   private Dog dog;
+   public Student() {
+   }
+   
+</code></pre></li>
+</ol>
+
+<p>==注意：@Resource(name = &ldquo;dog&rdquo;)中的name对应的是xml中的bean id==</p>
+
+<ol>
+<li>测试</li>
+</ol>
+
+<h5 id="resource-和-autowired-的区别">@Resource 和@ Autowired 的区别：</h5>
+
+<ul>
+<li>都是用来自动装配的，都可以放在属性字段上</li>
+<li>@ Autowired  通过byType的方式实现，而且必须要求这个对象存在！ 【常用】</li>
+<li>@ Resource 默认通过byname的方式实现，如果找不到名字，则通过byType实现！如果两个都找不到的情况下，就报错！ 【常用】</li>
+<li>执行顺序不同：@ Autowired  通过byType的方式实现。@ Resource 默认通过byname的方式实现。</li>
+</ul>
+
+<h3 id="3-接近注解开发">3.接近注解开发</h3>
+
+<p>举例:</p>
+
+<ol>
+<li><p>导入头文件</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+      xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+      xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+   &lt;context:annotation-config/&gt;
+   &lt;!--扫描该包下的所有的注解都会生效--&gt;
+   &lt;context:component-scan base-package=&quot;com.g&quot;/&gt;
+&lt;/beans&gt;
+   
+</code></pre></li>
+
+<li><p>实体类：</p>
+
+<pre><code class="language-java">@Component
+public class Student implements Serializable {
+   @Value(&quot;20&quot;)
+   private int age;
+   @Value(&quot;李四&quot;)
+   private String name;
+}
+   
+</code></pre></li>
+</ol>
+
+<p>==<strong>@Component</strong>==表示该类已经被Spring托管了</p>
+
+<p>==<strong>@value</strong>==可以理解为原来的xml中的bean中属性注入属性</p>
+
+<ol>
+<li>测试</li>
+</ol>
+
+<h3 id="4-完全java注解开发">4.完全java注解开发</h3>
+
+<p>全程不适用注解开发，完全使用java进行开发，并且这是在SpringBoot中常用的开发方式。</p>
+
+<p><strong>步骤：</strong></p>
+
+<ol>
+<li><p>创建实体类</p>
+
+<pre><code class="language-java">@Component
+public class Student implements Serializable {
+   @Value(&quot;20&quot;)
+   private int age;
+   @Value(&quot;李四&quot;)
+   private String name;
+}
+   
+</code></pre></li>
+
+<li><p>编写配置类</p>
+
+<pre><code class="language-java">@Configuration
+//@Configuration 表示该类是个配置类，其实本身就是一个组件
+@ComponentScan(value =&quot;com.g.pojo&quot;)
+//@ComponentScan 扫描该包下的组件
+public class Beansconfig {
+   @Bean
+   //注册一个bean，相当于我们之前的写的bean标签
+   //定义的方法名相当于bean中的id的值
+   //返回值的类型类相当于bean标签中的calss的值
+   public Student student(){
+       return new Student();
+   }
+}
+   
+</code></pre></li>
+
+<li><p>测试</p>
+
+<pre><code class="language-java">public class MyTest {
+   @Test
+   public void test(){
+       //如果完全使用了配置类方式去做，我们就只能通过 AnnotationConfig 上下文来获取容器，通过配置类的class对象加载
+       ApplicationContext context = new AnnotationConfigApplicationContext(Beansconfig.class);
+       Student student = context.getBean(&quot;student&quot;, Student.class);
+       System.out.println(student);
+   }
+}
+   
+</code></pre></li>
+</ol>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>

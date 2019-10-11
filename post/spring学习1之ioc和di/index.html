@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+    <title>Spring学习（1）之IoC和Di // Gex&#39;s Blog</title>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.58.3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="gex" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://gelearner.github.io/css/main.min.f90f5edd436ec7b74ad05479a05705770306911f721193e7845948fb07fe1335.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring学习（1）之IoC和Di"/>
+<meta name="twitter:description" content="Spring学习（1）之IoC和Di 1.Spring 1.1简介  是一个大杂烩，使现有的技术更快的使用，整合了现有的所有的框架。 2002年，首次推出了SPring的框架的雏形：interface21框架。 创始人:Rod Johnson,Spring Framework创始人，著名作者。很难想象Rod Johnson的学历，真的让好多人大吃一惊，他是悉尼大学的博士，然而他的专业不是计算机，而是音乐学。提出了著名的造轮子的理论。  现在的技术栈普遍是：
+ SSH ： Struct2 &#43; Spring &#43; Hibernate！ SSM ： SpringMvc &#43; Spring &#43; Mybatis！  Spring的获取的来源
+官网：https://spring.io/projects/spring-framework#overview
+官方下载地址： http://repo.spring.io/release/org/springframework/spring
+GitHub：https://github.com/spring-projects/spring-framework
+Spring的jar包：
+&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt; &lt;version&gt;5.2.0.RELEASE&lt;/version&gt; &lt;/dependency&gt; // 后期使用的时候，会对数据库进行相关的操作 &lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt; &lt;version&gt;5.2.0.RELEASE&lt;/version&gt; &lt;/dependency&gt;  1.2优点与缺点： 优点：
+==Spring是一个轻量级的控制反转（ioc）和面向切面编程（aop）的框架。==
+ 开源性 轻量级的，非入侵式的。 控制反转和，面向切面编程的。 支持对事务的处理，对框架的支持。  缺点：
+配置十分的繁琐，被称为配置地狱。
+1.3组成：  Data Access/Integration层包含有JDBC、ORM、OXM、JMS和Transaction模块。 Web层包含了Web、Web-Servlet、WebSocket、Web-Porlet模块。 AOP模块提供了一个符合AOP联盟标准的面向切面编程的实现。 Core Container(核心容器)：包含有Beans、Core、Context和SpEL模块。 Test模块支持使用JUnit和TestNG对Spring组件进行测试。  1."/>
+
+    <meta property="og:title" content="Spring学习（1）之IoC和Di" />
+<meta property="og:description" content="Spring学习（1）之IoC和Di 1.Spring 1.1简介  是一个大杂烩，使现有的技术更快的使用，整合了现有的所有的框架。 2002年，首次推出了SPring的框架的雏形：interface21框架。 创始人:Rod Johnson,Spring Framework创始人，著名作者。很难想象Rod Johnson的学历，真的让好多人大吃一惊，他是悉尼大学的博士，然而他的专业不是计算机，而是音乐学。提出了著名的造轮子的理论。  现在的技术栈普遍是：
+ SSH ： Struct2 &#43; Spring &#43; Hibernate！ SSM ： SpringMvc &#43; Spring &#43; Mybatis！  Spring的获取的来源
+官网：https://spring.io/projects/spring-framework#overview
+官方下载地址： http://repo.spring.io/release/org/springframework/spring
+GitHub：https://github.com/spring-projects/spring-framework
+Spring的jar包：
+&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt; &lt;version&gt;5.2.0.RELEASE&lt;/version&gt; &lt;/dependency&gt; // 后期使用的时候，会对数据库进行相关的操作 &lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt; &lt;version&gt;5.2.0.RELEASE&lt;/version&gt; &lt;/dependency&gt;  1.2优点与缺点： 优点：
+==Spring是一个轻量级的控制反转（ioc）和面向切面编程（aop）的框架。==
+ 开源性 轻量级的，非入侵式的。 控制反转和，面向切面编程的。 支持对事务的处理，对框架的支持。  缺点：
+配置十分的繁琐，被称为配置地狱。
+1.3组成：  Data Access/Integration层包含有JDBC、ORM、OXM、JMS和Transaction模块。 Web层包含了Web、Web-Servlet、WebSocket、Web-Porlet模块。 AOP模块提供了一个符合AOP联盟标准的面向切面编程的实现。 Core Container(核心容器)：包含有Beans、Core、Context和SpEL模块。 Test模块支持使用JUnit和TestNG对Spring组件进行测试。  1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://gelearner.github.io/post/spring%E5%AD%A6%E4%B9%A01%E4%B9%8Bioc%E5%92%8Cdi/" />
+<meta property="article:published_time" content="2019-10-06T11:38:19+08:00" />
+<meta property="article:modified_time" content="2019-10-06T11:38:19+08:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="https://gelearner.github.io/"><img class="app-header-avatar" src="/avatar.jpg" alt="gex" /></a>
+      <h1>Gex&#39;s Blog</h1>
+      <p>Studying!</p>
+      <div class="app-header-social">
+        
+          <a target="_blank" href="https://github.com/Gelearner"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-github">
+  <title>github</title>
+  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+</svg></a>
+        
+      </div>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Spring学习（1）之IoC和Di</h1>
+      <div class="post-meta">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Oct 6, 2019
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          3 min read
+        </div></div>
+    </header>
+    <div class="post-content">
+      
+
+<h1 id="spring学习-1-之ioc和di">Spring学习（1）之IoC和Di</h1>
+
+<h3 id="1-spring">1.Spring</h3>
+
+<h5 id="1-1简介">1.1简介</h5>
+
+<ol>
+<li>是一个大杂烩，使现有的技术更快的使用，整合了现有的所有的框架。</li>
+<li>2002年，首次推出了SPring的框架的雏形：interface21框架。</li>
+<li>创始人:Rod Johnson,Spring Framework创始人，著名作者。很难想象Rod Johnson的学历，真的让好多人大吃一惊，他是<a href="https://baike.baidu.com/item/悉尼大学">悉尼大学</a>的博士，然而他的专业不是计算机，而是音乐学。提出了著名的造轮子的理论。</li>
+</ol>
+
+<p>现在的技术栈普遍是：</p>
+
+<ol>
+<li>SSH  ： Struct2 + Spring + Hibernate！</li>
+<li>SSM ： SpringMvc + Spring + Mybatis！</li>
+</ol>
+
+<p><em><u>Spring的获取的来源</u></em></p>
+
+<p>官网：<a href="https://spring.io/projects/spring-framework#overview">https://spring.io/projects/spring-framework#overview</a></p>
+
+<p>官方下载地址： <a href="https://repo.spring.io/release/org/springframework/spring">http://repo.spring.io/release/org/springframework/spring</a></p>
+
+<p>GitHub：<a href="https://github.com/spring-projects/spring-framework">https://github.com/spring-projects/spring-framework</a></p>
+
+<p>Spring的jar包：</p>
+
+<pre><code class="language-xml">&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+// 后期使用的时候，会对数据库进行相关的操作
+&lt;!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;
+    &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<h5 id="1-2优点与缺点">1.2优点与缺点：</h5>
+
+<p><strong>优点：</strong></p>
+
+<p>==Spring是一个轻量级的控制反转（ioc）和面向切面编程（aop）的框架。==</p>
+
+<ol>
+<li>开源性</li>
+<li>轻量级的，非入侵式的。</li>
+<li>控制反转和，面向切面编程的。</li>
+<li>支持对事务的处理，对框架的支持。</li>
+</ol>
+
+<p><strong>缺点：</strong></p>
+
+<p>配置十分的繁琐，被称为配置地狱。</p>
+
+<h5 id="1-3组成">1.3组成：</h5>
+
+<p><img src="https://img-blog.csdnimg.cn/20191010182705231.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="1" /></p>
+
+<ul>
+<li>Data Access/Integration层包含有JDBC、ORM、OXM、JMS和Transaction模块。</li>
+<li>Web层包含了Web、Web-Servlet、WebSocket、Web-Porlet模块。</li>
+<li>AOP模块提供了一个符合AOP联盟标准的面向切面编程的实现。</li>
+<li>Core Container(核心容器)：包含有Beans、Core、Context和SpEL模块。</li>
+<li>Test模块支持使用JUnit和TestNG对Spring组件进行测试。</li>
+</ul>
+
+<h5 id="1-4提前知识">1.4提前知识：</h5>
+
+<ol>
+<li>现阶段的java开发会逐渐朝面向Spring开发进行。</li>
+<li>Springboot：
+
+<ol>
+<li>一个快速开发的一个脚手架（死模板，只需要记下来就好）</li>
+<li>基于Springboot快速开发单个微服务。</li>
+<li><em><u>约定大于配置？</u></em></li>
+</ol></li>
+<li>Spring Cloud：是基于Sping Boot 开发的</li>
+</ol>
+
+<p>学习Spring boot最好的前提是学习Spring，只会使用Springboot不知道底层的原理，难以发展。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/2019101018271619.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="2" /></p>
+
+<h3 id="2-ioc的本质">2.IoC的本质</h3>
+
+<p>中文的意思为控制反转，也可以将他理解为一个容器。</p>
+
+<ul>
+<li>是一种的设计的思想，就是将原本在程序中创建对象的控制权，交由Spring框架进行管理。</li>
+<li><strong>正常控制：</strong>new一个对象</li>
+<li><strong>反控：</strong>如果要使用某个对象，<u>是需要只需要从Spring容器获取需要使用的对象，不用关心对象的创建的过程，也就是将创建对象的控制权交给Spring框架。</u></li>
+</ul>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/7896890-bb752724e10e0df2.png?imageMogr2/auto-orient/strip|imageView2/2/w/503" alt="" /></p>
+
+<p><strong>示例：</strong></p>
+
+<ol>
+<li><p>创建一个Maven项目：</p></li>
+
+<li><p>导入jar包：</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+   &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+   &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+   &lt;version&gt;5.2.0.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre></li>
+
+<li><p>创建一个pojo类,使用了lombok</p>
+
+<pre><code class="language-java">@Data
+public class Student implements Serializable {
+   private int age;
+   private String name;
+   private char sex;
+}
+</code></pre></li>
+
+<li><p>再xml配置文件中进行配置</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+      xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+      xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+       https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+   &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+       &lt;property name=&quot;age&quot; value=&quot;100&quot;/&gt;
+       &lt;property name=&quot;name&quot; value=&quot;李四&quot;/&gt;
+       &lt;property name=&quot;sex&quot; value='男'/&gt;
+   &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre></li>
+</ol>
+
+<p>==id就是对象的名字==</p>
+
+<ol>
+<li><p>再测试类中进行测试，获取到了该对象</p>
+
+<pre><code class="language-java">public class MyTest {
+   public static void main(String[] args) {
+       ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+       Student student = context.getBean(&quot;student&quot;, Student.class);
+       System.out.println(student);
+   }
+}
+</code></pre></li>
+</ol>
+
+<p>==IoC的本质：Spring作为一个容器，需要shenm对象，由Spring进行创建，Spring底层会根据反射的原理找到对象的calss文件并对其中的字段进行赋值等操作（装配，依赖注入）。总之Ioc就是一种设计思想，di（依赖注入）是实现这种思想的一种方法。==</p>
+
+<h5 id="2-1ioc创建对象的方式">2.1IoC创建对象的方式：</h5>
+
+<p>因为再实体类中不止有有参的构造也有无参构造，Spring会对创建的实体类进行装配时，会找不到Spring所需要的格式。</p>
+
+<ul>
+<li>无参构造，和上面的例子一样的操作</li>
+<li>有参构造，这个时候就需要使用构造器的方式进行属性的注入</li>
+</ul>
+
+<p>例如：</p>
+
+<p>对上面的xml文件进行修改：</p>
+
+<pre><code class="language-xml">&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+    方法1：使用参数的下角标进行依赖注入值
+    &lt;constructor-arg index=&quot;0&quot; value=&quot;200&quot;/&gt;
+    方式2：使用参数的名称依赖植入
+    &lt;constructor-arg name=&quot;name&quot; value=&quot;王五&quot;/&gt;
+    方式3：使用参数的类型进行依赖注入（不推荐，因为肯定会重复的）
+    &lt;constructor-arg type=&quot;char&quot; value='女'/&gt;
+&lt;/bean&gt;
+</code></pre>
+
+<h3 id="3-spring中xml文件中的属性的配置">3.Spring中xml文件中的属性的配置</h3>
+
+<h5 id="3-1别名">3.1别名</h5>
+
+<p>xml文件：</p>
+
+<pre><code class="language-xml">&lt;!--就是拓展了上面bean中的id的值--&gt;
+&lt;alias name=&quot;student&quot; alias=&quot;s&quot;/&gt;
+</code></pre>
+
+<p>测试类：</p>
+
+<pre><code class="language-java">Student student = context.getBean(&quot;s&quot;, Student.class);
+</code></pre>
+
+<h5 id="3-2bean的配置">3.2Bean的配置</h5>
+
+<pre><code class="language-xml">&lt;!--
+    id : bean 的唯一标识符，也就是相当于我们学的对象名
+    class : bean 对象所对应的全限定名 ： 包名 + 类型
+    name ：也是别名,而且name 可以同时取多个别名
+    --&gt;
+&lt;bean id=&quot;userT&quot; class=&quot;com.kuang.pojo.UserT&quot; name=&quot;user2 u2,u3;u4&quot;&gt;
+    &lt;property name=&quot;name&quot; value=&quot;西部开源&quot;/&gt;
+&lt;/bean&gt;
+
+</code></pre>
+
+<h5 id="3-3import">3.3import</h5>
+
+<p>这个import，一般用于团队开发使用，他可以将多个配置文件，导入合并为一个</p>
+
+<p>假设，现在项目中有多个人开发，这三个人复制不同的类开发，不同的类需要注册在不同的bean中，我们可以利用import将所有人的beans.xml合并为一个总的！</p>
+
+<ul>
+<li><p>张三</p></li>
+
+<li><p>李四</p></li>
+
+<li><p>王五</p></li>
+
+<li><p>applicationContext.xml</p>
+
+<pre><code class="language-xml">&lt;import resource=&quot;beans.xml&quot;/&gt;
+&lt;import resource=&quot;beans2.xml&quot;/&gt;
+&lt;import resource=&quot;beans3.xml&quot;/&gt;
+  
+</code></pre></li>
+</ul>
+
+<p>使用的时候，直接使用总的配置就可以了</p>
+
+<p><u>每个人只需要写自己的实体类和xml配置文件就可以了。</u></p>
+
+<h5 id="3-4bean标签的作用域">3.4bean标签的作用域</h5>
+
+<p><img src="https://img-blog.csdnimg.cn/20191010182759298.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2dleGluMDUxNw==,size_16,color_FFFFFF,t_70" alt="3" /></p>
+
+<ol>
+<li><p>单例模式 （Spring默认机制）</p>
+
+<pre><code class="language-java">&lt;bean id=&quot;s1&quot; class=&quot;com.g.pojo.Student&quot; scope=&quot;singleton&quot;/&gt;
+   
+</code></pre></li>
+
+<li><p>原型模式：每次从容器中get的时候，都会产生一个新对象！</p>
+
+<pre><code class="language-java">&lt;bean id=&quot;s3&quot; class=&quot;com.g.pojo.Student&quot; scope=&quot;prototype&quot;/&gt;
+   
+</code></pre></li>
+</ol>
+
+<p>测试：</p>
+
+<pre><code class="language-java">   public class MyTest {
+       public static void main(String[] args) {
+           ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+           Student student1 = context.getBean(&quot;s1&quot;, Student.class);
+           Student student2 = context.getBean(&quot;s2&quot;, Student.class);
+           Student student3 = context.getBean(&quot;s3&quot;, Student.class);
+           //单例和单例
+           System.out.println(student1==student1);
+           //单例和原型
+           System.out.println(student1==student3);
+       }
+   }
+   
+   true
+   false
+   
+</code></pre>
+
+<ol>
+<li>其余的 request、session、application、这些个只能在web开发中使用到！</li>
+</ol>
+
+<h3 id="4-di-依赖注入">4.Di【依赖注入】</h3>
+
+<h5 id="4-1-普通注入-无参的bean">4.1.普通注入，无参的bean</h5>
+
+<h5 id="4-2-构造器注入-针对于有参构造">4.2.构造器注入：针对于有参构造</h5>
+
+<pre><code class="language-xml">&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+    方法1：使用参数的下角标进行依赖注入值
+    &lt;constructor-arg index=&quot;0&quot; value=&quot;200&quot;/&gt;
+    方式2：使用参数的名称依赖植入
+    &lt;constructor-arg name=&quot;name&quot; value=&quot;王五&quot;/&gt;
+    方式3：使用参数的类型进行依赖注入（不推荐，因为肯定会重复的）
+    &lt;constructor-arg type=&quot;char&quot; value='女'/&gt;
+&lt;/bean&gt;
+
+</code></pre>
+
+<h5 id="4-3-set方式注入-引用型数据类型">4.3.Set方式注入(引用型数据类型)</h5>
+
+<p>复杂的实体类的数据的注入</p>
+
+<ol>
+<li><p>Student类</p>
+
+<pre><code class="language-java">public class Student {
+   private Address address;
+   private String name;
+}
+   
+</code></pre></li>
+
+<li><p>Address类</p>
+
+<pre><code class="language-java">@Data
+public class Address {
+   private String address;
+   public String getAddress() {
+       return address;
+   }
+   public void setAddress(String address) {
+       this.address = address;
+   }
+}
+   
+</code></pre></li>
+
+<li><p>配置文件</p>
+
+<pre><code class="language-xml">&lt;bean id=&quot;dizhi&quot; class=&quot;com.g.pojo.Address&quot;&gt;
+   &lt;property name=&quot;address&quot; value=&quot;陕西&quot;/&gt;
+&lt;/bean&gt;
+&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+   &lt;property name=&quot;address&quot; ref=&quot;dizhi&quot;/&gt;
+   &lt;property name=&quot;name&quot; value=&quot;张三&quot;/&gt;
+&lt;/bean&gt;
+   
+</code></pre></li>
+</ol>
+
+<p>==注意：student类的指向ref指向上面由Spring创建出来的对象dizhi==</p>
+
+<ol>
+<li><p>测试</p>
+
+<pre><code class="language-java">public class MyTest {
+   public static void main(String[] args) {
+       ApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+       Student student = (Student) context.getBean(&quot;student&quot;);
+       System.out.println(student);
+   }
+}
+   
+</code></pre></li>
+
+<li><p>执行结果</p>
+
+<pre><code class="language-java">Student{address=Address(address=陕西)}
+   
+</code></pre></li>
+</ol>
+
+<h5 id="4-4复杂数据类型的属性注入">4.4复杂数据类型的属性注入</h5>
+
+<ol>
+<li><p>实体类：</p>
+
+<pre><code class="language-java">@Data
+public class Student {
+   private String name;
+   private String[] books;
+   private List&lt;String&gt; hobbys;
+   private Map&lt;String,String&gt; card;
+   private Set&lt;String&gt; games;
+   private String wife;
+   private Properties info;
+}
+   
+</code></pre></li>
+
+<li><p>配置文件:</p>
+
+<pre><code class="language-xml">&lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot;&gt;
+   &lt;property name=&quot;name&quot;&gt;
+       &lt;value&gt;张三&lt;/value&gt;
+   &lt;/property&gt;
+   &lt;!--数组--&gt;
+   &lt;property name=&quot;books&quot;&gt;
+       &lt;array&gt;
+           &lt;value&gt;天龙八部&lt;/value&gt;
+           &lt;value&gt;笑傲江湖&lt;/value&gt;
+       &lt;/array&gt;
+   &lt;/property&gt;
+   &lt;!--list集合--&gt;
+   &lt;property name=&quot;hobbys&quot;&gt;
+       &lt;list&gt;
+           &lt;value&gt;running&lt;/value&gt;
+           &lt;value&gt;swimming&lt;/value&gt;
+           &lt;value&gt;singing&lt;/value&gt;
+       &lt;/list&gt;
+   &lt;/property&gt;
+   &lt;!--map集合--&gt;
+   &lt;property name=&quot;card&quot;&gt;
+       &lt;map&gt;
+           &lt;entry key=&quot;id&quot; value=&quot;123456789&quot;/&gt;
+           &lt;entry key=&quot;name&quot; value=&quot;张三&quot;/&gt;
+           &lt;entry key=&quot;sex&quot; value=&quot;男&quot;/&gt;
+       &lt;/map&gt;
+   &lt;/property&gt;
+   &lt;!--set集合--&gt;
+   &lt;property name=&quot;games&quot;&gt;
+       &lt;set&gt;
+           &lt;value&gt;lol&lt;/value&gt;
+           &lt;value&gt;csgo&lt;/value&gt;
+       &lt;/set&gt;
+   &lt;/property&gt;
+   &lt;!--null注入--&gt;
+   &lt;property name=&quot;wife&quot;&gt;
+       &lt;null/&gt;
+   &lt;/property&gt;
+   &lt;!--properties--&gt;
+   &lt;property name=&quot;info&quot;&gt;
+       &lt;props&gt;
+           &lt;prop key=&quot;driver&quot;&gt;driver&lt;/prop&gt;
+           &lt;prop key=&quot;url&quot;&gt;ssss&lt;/prop&gt;
+           &lt;prop key=&quot;username&quot;&gt;name&lt;/prop&gt;
+           &lt;prop key=&quot;password&quot;&gt;123456&lt;/prop&gt;
+       &lt;/props&gt;
+   &lt;/property&gt;
+&lt;/bean&gt;
+   
+</code></pre></li>
+
+<li><p>测试:</p>
+
+<pre><code class="language-java">public class MyTest {
+   public static void main(String[] args) {
+       ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(&quot;beans.xml&quot;);
+       Student student = (Student) context.getBean(&quot;student&quot;);
+       System.out.println(student);
+   }
+}
+   
+</code></pre></li>
+</ol>
+
+<h5 id="4-5拓展方式注入-c和p注入">4.5拓展方式注入（c和p注入）</h5>
+
+<ul>
+<li><p>p命名空间注入，是普通注入的捷径
+在配置文件中导入头文件，然后使用</p>
+
+<pre><code class="language-xml">头文件：xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+     xmlns:p=&quot;http://www.springframework.org/schema/p&quot;
+     xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+      https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+      &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; p:name=&quot;李四&quot;/&gt;
+&lt;/beans&gt;
+  
+</code></pre></li>
+
+<li><p>c命名空间的注入，是构造器注入的捷径，
+使用方法：同理</p>
+
+<pre><code class="language-xml">头文件：xmlns:c=&quot;http://www.springframework.org/schema/c&quot;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+     xmlns:c=&quot;http://www.springframework.org/schema/c&quot;
+     xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans
+      https://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+      &lt;bean id=&quot;student&quot; class=&quot;com.g.pojo.Student&quot; c:name=&quot;张三&quot;/&gt;
+&lt;/beans&gt;
+  
+</code></pre></li>
+</ul>
+
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+  </body>
+</html>
